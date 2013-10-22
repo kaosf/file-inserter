@@ -1,0 +1,33 @@
+#! /usr/bin/env ruby
+
+if ARGV.length < 3
+  puts 'arity error'
+  exit 1
+end
+src = ARGV[0]
+target = ARGV[1]
+line_number = ARGV[2].to_i
+no_of_deletion = ARGV[3].to_i || 0
+
+src_lines = []
+File.open(src) do |f|
+  f.each_line do |l|
+    src_lines << l.chomp
+  end
+end
+target_lines = []
+File.open(target) do |f|
+  f.each_line do |l|
+    target_lines << l.chomp
+  end
+end
+index = [[0, line_number - 1].max, target_lines.length].min
+File.open(target, 'w') do |f|
+  (
+    target_lines[0...index] +
+    src_lines +
+    target_lines[(index + no_of_deletion)..-1]
+  ).each do |l|
+    f.puts l
+  end
+end
