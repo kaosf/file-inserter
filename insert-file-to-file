@@ -1,33 +1,23 @@
-#! /usr/bin/env ruby
+#!/bin/bash
 
-if ARGV.length < 3
-  puts 'arity error'
+if [ $# -lt 3 ]
+then
+  echo 'Arity error' >&2
+  echo '  insert-file-to-file src target line-number [no-of-deletion=0]' >&2
   exit 1
-end
-src = ARGV[0]
-target = ARGV[1]
-line_number = ARGV[2].to_i
-no_of_deletion = ARGV[3].to_i || 0
+fi
 
-src_lines = []
-File.open(src) do |f|
-  f.each_line do |l|
-    src_lines << l.chomp
-  end
-end
-target_lines = []
-File.open(target) do |f|
-  f.each_line do |l|
-    target_lines << l.chomp
-  end
-end
-index = [[0, line_number - 1].max, target_lines.length].min
-File.open(target, 'w') do |f|
-  (
-    target_lines[0...index] +
-    src_lines +
-    target_lines[(index + no_of_deletion)..-1]
-  ).each do |l|
-    f.puts l
-  end
-end
+SRC=$1
+TARGET=$2
+LINE_NUMBER=$3
+NO_OF_DELETION=$4
+if [ -z $NO_OF_DELETION ]
+then
+  NO_OF_DELETION=0
+fi
+
+TEMPFILE=/tmp/tempfile-`date +%Y%m%d%H%M%S`
+head -$((${LINE_NUMBER}-1)) $TARGET > $TEMPFILE
+cat $SRC >> $TEMPFILE
+tail -n +$(($LINE_NUMBER+$NO_OF_DELETION)) $TARGET >> $TEMPFILE
+mv $TEMPFILE $TARGET
