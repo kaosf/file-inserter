@@ -1,0 +1,13 @@
+PREFIX=
+
+all:
+
+check:
+	/bin/bash test/run.sh
+
+install:
+	mkdir -p $(PREFIX)/bin
+	cp insert-file-to-file $(PREFIX)/bin
+
+uninstall:
+	rm $(PREFIX)/bin/insert-file-to-file
